@@ -1,3 +1,6 @@
+Forked from: https://github.com/suny-sht/Visual-analysis-of-the-layout-of-documents.git
+
+
 <img src=".github/Detectron2-Logo-Horz.svg" width="300" >
 
 Detectron2 is Facebook AI Research's next generation software system
@@ -35,7 +38,7 @@ And see [projects/](projects/) for some projects that are built on top of detect
 ## Model Zoo and Baselines
 
 We provide a large set of baseline results and trained models available for download in the [Detectron2 Model Zoo](MODEL_ZOO.md).
-
+ 
 
 ## License
 

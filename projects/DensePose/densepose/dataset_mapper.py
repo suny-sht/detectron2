@@ -14,7 +14,7 @@ from .structures import DensePoseDataRelative, DensePoseList, DensePoseTransform
 
 class DatasetMapper:
     """
-    A customized version of `detectron2.data.DatasetMapper`
+    A customized version of `detectron2.data.DatasetMapperper`
     """
 
     def __init__(self, cfg, is_train=True):

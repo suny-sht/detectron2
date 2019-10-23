@@ -19,19 +19,7 @@ def get_event_storage():
     return _CURRENT_STORAGE_STACK[-1]
 
 
-class EventWriter:
-    """
-    Base class for writers that obtain events from :class:`EventStorage` and process them.
-    """
-
-    def write(self):
-        raise NotImplementedError
-
-    def close(self):
-        pass
-
-
-class JSONWriter(EventWriter):
+class JSONWriter:
     """
     Write scalars to a json file.
 
@@ -98,11 +86,12 @@ class JSONWriter(EventWriter):
         except AttributeError:
             pass
 
-    def close(self):
+    def __del__(self):
+        # not guaranteed to be called at exit, but probably fine
         self._file_handle.close()
 
 
-class TensorboardXWriter(EventWriter):
+class TensorboardXWriter:
     """
     Write all scalars to a tensorboard file.
     """
@@ -124,12 +113,12 @@ class TensorboardXWriter(EventWriter):
         for k, v in storage.latest_with_smoothing_hint(self._window_size).items():
             self._writer.add_scalar(k, v, storage.iter)
 
-    def close(self):
+    def __del__(self):
         if hasattr(self, "_writer"):  # doesn't exist when the code fails at import
             self._writer.close()
 
 
-class CommonMetricPrinter(EventWriter):
+class CommonMetricPrinter:
     """
     Print __common__ metrics to the terminal, including
     iteration time, ETA, memory, all losses, and the learning rate.
