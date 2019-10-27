@@ -27,6 +27,7 @@ from detectron2.data import (
 )
 from detectron2.evaluation import (
     DatasetEvaluator,
+    COCOEvaluator,
     inference_on_dataset,
     print_csv_format,
     verify_results,
@@ -376,7 +377,8 @@ class DefaultTrainer(SimpleTrainer):
         Returns:
             DatasetEvaluator
         """
-        raise NotImplementedError
+        #raise NotImplementedError
+        return COCOEvaluator(dataset_name, cfg, True)
 
     @classmethod
     def test(cls, cfg, model, evaluators=None):

@@ -84,7 +84,10 @@ class COCOEvaluator(DatasetEvaluator):
                 "instances" that contains :class:`Instances`.
         """
         for input, output in zip(inputs, outputs):
-            prediction = {"image_id": input["image_id"]}
+            try:
+                prediction = {"image_id": input["image_id"]}
+            except KeyError:
+                prediction = {"image_id": input["id"]}
 
             # TODO this is ugly
             if "instances" in output:
@@ -107,7 +110,10 @@ class COCOEvaluator(DatasetEvaluator):
                     instances.pred_masks_rle = rles
                     instances.remove("pred_masks")
 
-                prediction["instances"] = instances_to_json(instances, input["image_id"])
+                try:
+                    prediction["instances"] = instances_to_json(instances, input["image_id"])
+                except KeyError:
+                    prediction["instances"] = instances_to_json(instances, input["id"])
             if "proposals" in output:
                 prediction["proposals"] = output["proposals"].to(self._cpu_device)
             self._predictions.append(prediction)
@@ -168,6 +174,7 @@ class COCOEvaluator(DatasetEvaluator):
 
         self._logger.info("Evaluating predictions ...")
         for task in sorted(tasks):
+
             coco_eval = (
                 _evaluate_predictions_on_coco(
                     self._coco_api, self._coco_results, task, kpt_oks_sigmas=self._kpt_oks_sigmas
