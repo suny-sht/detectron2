@@ -564,8 +564,10 @@ class Visualizer:
             color = assigned_colors[i]
             if boxes is not None:
                 self.draw_box(boxes[i], edge_color=color)
-
+            #CHANGED TO MAKE IT WORK WITH THE DANTE DATASET
             if masks is not None:
+                #segment = np.asarray(masks[i].polygons)
+                #self.draw_polygon(segment.reshape(-1, 2), color, alpha=alpha)
                 for segment in masks[i].polygons:
                     self.draw_polygon(segment.reshape(-1, 2), color, alpha=alpha)
 

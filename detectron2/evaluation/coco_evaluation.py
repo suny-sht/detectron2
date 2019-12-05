@@ -44,6 +44,7 @@ class COCOEvaluator(DatasetEvaluator):
         self._tasks = self._tasks_from_config(cfg)
         self._distributed = distributed
         self._output_dir = output_dir
+        self._predictions = []
 
         self._cpu_device = torch.device("cpu")
         self._logger = logging.getLogger(__name__)
@@ -175,19 +176,25 @@ class COCOEvaluator(DatasetEvaluator):
         self._logger.info("Evaluating predictions ...")
         for task in sorted(tasks):
 
-            coco_eval = (
+            coco_eval, pr = (
                 _evaluate_predictions_on_coco(
                     self._coco_api, self._coco_results, task, kpt_oks_sigmas=self._kpt_oks_sigmas
                 )
                 if len(self._coco_results) > 0
                 else None  # cocoapi does not handle empty results very well
             )
+            self.pr = pr
 
             res = self._derive_coco_results(
                 coco_eval, task, class_names=self._metadata.get("thing_classes")
             )
             self._results[task] = res
 
+    def get_pr(self):
+        if self.pr:
+            return self.pr
+        else:
+            return None
     def _eval_box_proposals(self):
         """
         Evaluate the box proposals in self._predictions.
@@ -450,6 +457,7 @@ def _evaluate_predictions_on_coco(coco_gt, coco_results, iou_type, kpt_oks_sigma
     Evaluate the coco results using COCOEval API.
     """
     assert len(coco_results) > 0
+    iou_type = "segm"
 
     if iou_type == "segm":
         coco_results = copy.deepcopy(coco_results)
@@ -469,4 +477,20 @@ def _evaluate_predictions_on_coco(coco_gt, coco_results, iou_type, kpt_oks_sigma
     coco_eval.accumulate()
     coco_eval.summarize()
 
-    return coco_eval
+    pr1 = np.array(coco_eval.eval['precision'][0, :, :, 0, 2])
+    pr2 = np.array(coco_eval.eval['precision'][2, :, :, 0, 2])
+    pr3 = np.array(coco_eval.eval['precision'][4, :, :, 0, 2])
+    pr4 = np.array(coco_eval.eval['precision'][6, :, :, 0, 2])
+    pr5 = np.array(coco_eval.eval['precision'][8, :, :, 0, 2])
+
+    #pr1 = np.mean(pr1, axis=1)
+    #pr2 = np.mean(pr2, axis=1)
+    #pr3 = np.mean(pr3, axis=1)
+    #pr4 = np.mean(pr4, axis=1)
+    #pr5 = np.mean(pr5, axis=1)
+
+    pr = [pr1, pr2, pr3, pr4, pr5]
+    #print("pr:")
+    #print(pr)
+
+    return coco_eval, pr

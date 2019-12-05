@@ -45,16 +45,16 @@ _C.MODEL.PIXEL_STD = [1.0, 1.0, 1.0]
 # -----------------------------------------------------------------------------
 _C.INPUT = CN()
 # Size of the smallest side of the image during training
-_C.INPUT.MIN_SIZE_TRAIN = (800,)
+_C.INPUT.MIN_SIZE_TRAIN = (400,)
 # Sample size of smallest side by choice or random selection from range give by
 # INPUT.MIN_SIZE_TRAIN
 _C.INPUT.MIN_SIZE_TRAIN_SAMPLING = "choice"
 # Maximum size of the side of the image during training
-_C.INPUT.MAX_SIZE_TRAIN = 1333
+_C.INPUT.MAX_SIZE_TRAIN = 667
 # Size of the smallest side of the image during testing. Set to zero to disable resize in testing.
-_C.INPUT.MIN_SIZE_TEST = 800
+_C.INPUT.MIN_SIZE_TEST = 400
 # Maximum size of the side of the image during testing
-_C.INPUT.MAX_SIZE_TEST = 1333
+_C.INPUT.MAX_SIZE_TEST = 667
 
 # `True` if cropping is used for data augmentation during training
 _C.INPUT.CROP = CN({"ENABLED": False})
